@@ -2,9 +2,9 @@
 
 Here will be located all files and scripts corresponding to my master diploma.
 
-## Poject architecture
+## Project architecture
 
-### texts
+### Texts
 
 Raw texts:
 - texts/wikipedia/en
