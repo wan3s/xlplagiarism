@@ -7,12 +7,11 @@ import deep_translator
 
 from progress import bar
 
+from . import common
 
-_RAW_TEXTS_ROOT = pathlib.Path('../wikipedia/_raw')
-_OUTPUT_TEXTS_DIR_ROOT = pathlib.Path('../wikipedia')
+
+_RAW_TEXTS_ROOT = common.TRANSLATED_TEXTS.join('_raw')
 _SENTENCES_NUM_IN_TEXT = 5
-_RU_SRC_LANG = 'ru'
-_DEFAULT_DST_LANG = 'en'
 
 def traverse_raw_texts(root_dir: pathlib.Path) -> str:
     all_texts = ''
@@ -33,18 +32,18 @@ def split_raw_texts(raw_texts: str) -> tp.List[str]:
     return result
 
 
-def translate_russian_texts(
+def translate_texts(
     texts: tp.List[str], 
-    dst_lang: str = _DEFAULT_DST_LANG
+    dst_lang: str = common.DST_LANG
 ) -> tp.Dict[str, tp.Dict[str, str]]:
     result = {}
-    translator = deep_translator.GoogleTranslator(source=_RU_SRC_LANG, target=dst_lang)
+    translator = deep_translator.GoogleTranslator(source=common.SRC_LANG, target=dst_lang)
     progress_bar = bar.IncrementalBar('Translated texts', max=len(texts))
     for text in texts:
         file_name = _get_file_name_by_text(text)
         translated_text = translator.translate(text)
         result[file_name] = {
-            _RU_SRC_LANG: text,
+            common.SRC_LANG: text,
             dst_lang: translated_text
         }
         progress_bar.next()
@@ -59,7 +58,7 @@ def save_translated_texts(translated_texts: tp.Dict[str, tp.Dict[str, str]]):
     )
     for file_name, texts in translated_texts.items():
         for lang, text in texts.items():
-            dir_path = _OUTPUT_TEXTS_DIR_ROOT.joinpath(lang)
+            dir_path = common.TRANSLATED_TEXTS.joinpath(lang)
             dir_path.mkdir(
                 parents=True, exist_ok=True
             )
@@ -81,7 +80,7 @@ def main():
         f'Gotten {len(splitted_texts)} texts '
         f'contained <= {_SENTENCES_NUM_IN_TEXT} sentences'
     )
-    translated_texts = translate_russian_texts(splitted_texts)
+    translated_texts = translate_texts(splitted_texts)
     print(
         f'Num of translated texts: {len(translated_texts)}'
     )
