@@ -10,7 +10,7 @@ from progress import bar
 from . import common
 
 
-_RAW_TEXTS_ROOT = pathlib.Path('../wikipedia/_raw')
+_RAW_TEXTS_ROOT = common.TRANSLATED_TEXTS.join('_raw')
 _SENTENCES_NUM_IN_TEXT = 5
 
 def traverse_raw_texts(root_dir: pathlib.Path) -> str:

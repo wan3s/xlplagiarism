@@ -6,7 +6,7 @@ import random
 
 from progress import bar
 
-from . import common
+import common
 
 
 _COMBINED_TEXTS_NUM = 5
@@ -14,15 +14,21 @@ _TOTAL_TEXTS_NUM = 10000
 
 
 def main():
-    texts = traverse_texts(common.TRANSLATED_TEXTS.joinpath(common.SRC_LANG))
-    shuflled, originality = shuffle_texts(texts)
+    src_lang_texts = traverse_texts(common.TRANSLATED_TEXTS.joinpath(common.SRC_LANG))
+    dst_lang_texts = traverse_texts(common.TRANSLATED_TEXTS.joinpath(common.DST_LANG))
+    shuflled, originality = shuffle_texts(src_lang_texts)
+    # make_texts(shuflled, src_lang_texts, common.SRC_LANG)
+    # make_texts(shuflled, dst_lang_texts, common.DST_LANG)
+    with open(common.SHUFFLED_TEXTS.joinpath('originality'), 'w') as out_file:
+        out_file.write(str(dict(originality)))
+    
 
 
 def traverse_texts(root_dir: pathlib.Path) -> str:
     res = {}
-    for txt_file in root_dir:
+    for txt_file in root_dir.glob('*'):
         with open(txt_file) as inp_file:
-            res[txt_file] = inp_file.read()
+            res[txt_file.stem] = inp_file.read()
     return res
 
 
@@ -32,7 +38,7 @@ def shuffle_texts(src_texts):
     texts_lenghts = get_texts_lengths(src_texts)
     progress_bar = bar.IncrementalBar(
         'Shuffled texts', 
-        max=len(_TOTAL_TEXTS_NUM)
+        max=_TOTAL_TEXTS_NUM
     )
     while len(result_texts) < _TOTAL_TEXTS_NUM:
         new_text = []
@@ -56,6 +62,24 @@ def shuffle_texts(src_texts):
     progress_bar.finish()
     return result_texts, texts_originalities
         
+
+def make_texts(texts_hashes, texts, lang):
+    progress_bar = bar.IncrementalBar(
+        f'Generated {lang} texts', 
+        max=len(texts_hashes)
+    )
+    for file_name, text_hashes in texts_hashes.items():
+        dir_path = common.SHUFFLED_TEXTS.joinpath(lang)
+        dir_path.mkdir(
+            parents=True, exist_ok=True
+        )
+        text = ' '.join(
+            [texts[text_hash] for text_hash in text_hashes]
+        )
+        with open(dir_path.joinpath(file_name), 'w') as out_file:
+            out_file.write(text)
+        progress_bar.next()
+    progress_bar.finish()
 
 
 def get_texts_lengths(src_lang_texts):
