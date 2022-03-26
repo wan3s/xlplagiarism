@@ -1,4 +1,6 @@
 import bert
+import typing as tp
+import nltk
 
 import numpy as np
 import tensorflow as tf
@@ -69,11 +71,8 @@ def encode(input_text):
     return labse_model([input_ids, input_mask, segment_ids])
 
 
-english_sentences = ["Hello", "How are you?", "I'm walking along street"]
-russian_sentences = ["Привет", "Как дела?", "Я учусь в МГУ"]
-
-english_embeddings = encode(english_sentences)
-russian_embeddings = encode(russian_sentences)
-
-# English-Russian similarity
-print (np.matmul(english_embeddings, np.transpose(russian_embeddings)))
+def count_similiarity(src_lang_text: str, dst_lang_text: str):
+  src_lang_embeddings, dst_lang_embeddings = [
+    encode(text) for text in [[src_lang_text], [dst_lang_text]]
+  ]
+  return np.diag(np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings)))
