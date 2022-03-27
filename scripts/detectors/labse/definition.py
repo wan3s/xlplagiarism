@@ -28,7 +28,7 @@ class LabseDetector(common.BaseDetector):
     ]
     return np.diag(np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings)))
 
-  def encode(self, input_text):
+  def _encode(self, input_text):
     input_ids, input_mask, segment_ids = self._create_input(input_text)
     return self.labse_model([input_ids, input_mask, segment_ids])
 
