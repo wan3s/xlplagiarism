@@ -17,7 +17,7 @@ class ShinglesDetector(common.BaseDetector):
         )
 
     def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
-        translated_text =  self._translator.translate(src_lang_text)
+        translated_text =  common.translate_text(self._translator, src_lang_text)
         src_hashes = _shingle_text(translated_text)
         dst_hashes = _shingle_text(dst_lang_text)
         return len(src_hashes.intersection(dst_hashes)) / len(src_hashes)

@@ -22,7 +22,7 @@ class TfIdfDetector(common.BaseDetector):
         )
 
     def count_similiarity(self, src_lang_text, dst_lang_text):
-        translated_text = self._translator.translate(src_lang_text)
+        translated_text = common.translate_text(self._translator, src_lang_text)
         src_tf_ifd = self.count_tf_idf(translated_text)
         dst_tf_idf = self.count_tf_idf(dst_lang_text)
         words_union = list(set().union(src_tf_ifd, dst_tf_idf))
