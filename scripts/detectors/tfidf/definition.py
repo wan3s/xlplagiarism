@@ -1,5 +1,6 @@
 from collections import defaultdict
 import collections
+import deep_translator
 import math
 from turtle import st
 import nltk
@@ -14,9 +15,14 @@ class TfIdfDetector(common.BaseDetector):
     def __init__(self) -> None:
         super().__init__()
         self._idf = self.count_idf(root_dir=texts_consts.TRANSLATED_TEXTS)
+        self._translator = deep_translator.GoogleTranslator(
+            source=texts_consts.SRC_LANG, 
+            target=texts_consts.DST_LANG
+        )
 
     def count_similiarity(self, src_lang_text, dst_lang_text):
-        src_tf_ifd = self.count_tf_idf(src_lang_text)
+        translated_text = self._translator.translate(src_lang_text)
+        src_tf_ifd = self.count_tf_idf(translated_text)
         dst_tf_idf = self.count_tf_idf(dst_lang_text)
         words_union = list(set().union(src_tf_ifd, dst_tf_idf))
         v1, v2 = _get_vect_by(words_union, src_tf_ifd), dst_tf_idf(words_union, dst_tf_idf)
