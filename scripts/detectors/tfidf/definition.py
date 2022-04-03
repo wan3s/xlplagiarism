@@ -14,7 +14,7 @@ from progress import bar
 class TfIdfDetector(common.BaseDetector):
     def __init__(self) -> None:
         super().__init__()
-        self._idf = self.count_idf(root_dir=texts_consts.TRANSLATED_TEXTS)
+        self._idf = count_idf(root_dir=texts_consts.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
             source=texts_consts.SRC_LANG, 
             target=texts_consts.DST_LANG
@@ -25,7 +25,7 @@ class TfIdfDetector(common.BaseDetector):
         src_tf_ifd = self.count_tf_idf(translated_text)
         dst_tf_idf = self.count_tf_idf(dst_lang_text)
         words_union = list(set().union(src_tf_ifd, dst_tf_idf))
-        v1, v2 = _get_vect_by(words_union, src_tf_ifd), dst_tf_idf(words_union, dst_tf_idf)
+        v1, v2 = _get_vect_by(words_union, src_tf_ifd), _get_vect_by(words_union, dst_tf_idf)
         return cos_between_vectors(v1, v2)
 
     def count_tf_idf(self, text):
