@@ -10,15 +10,15 @@ import common
 
 
 _COMBINED_TEXTS_NUM = 5
-_TOTAL_TEXTS_NUM = 10000
+_TOTAL_TEXTS_NUM = 5
 
 
 def main():
     src_lang_texts = traverse_texts(common.TRANSLATED_TEXTS.joinpath(common.SRC_LANG))
     dst_lang_texts = traverse_texts(common.TRANSLATED_TEXTS.joinpath(common.DST_LANG))
-    shuflled, originality = shuffle_texts(src_lang_texts)
-    make_texts(shuflled, src_lang_texts, common.SRC_LANG)
-    make_texts(shuflled, dst_lang_texts, common.DST_LANG)
+    shuffled, originality = shuffle_texts(src_lang_texts)
+    make_texts(shuffled, src_lang_texts, common.SRC_LANG)
+    make_texts(shuffled, dst_lang_texts, common.DST_LANG)
     with open(common.SHUFFLED_TEXTS.joinpath('originality'), 'w') as out_file:
         out_file.write(str(dict(originality)))
     
