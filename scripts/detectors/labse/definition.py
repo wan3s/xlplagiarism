@@ -10,7 +10,7 @@ MODEL_URL = 'sentence-transformers/LaBSE'
 
 class LabseDetector(common.BaseDetector):
   def __init__(self, *args, **kwargs):
-    print('LabseDetector initializeing ...')
+    print('LabseDetector initializing ...')
     super().__init__(*args, **kwargs)
     self._model = SentenceTransformer(MODEL_URL)
 

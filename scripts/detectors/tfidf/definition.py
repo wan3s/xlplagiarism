@@ -13,6 +13,7 @@ from progress import bar
 
 class TfIdfDetector(common.BaseDetector):
     def __init__(self) -> None:
+        print('TfIdfDetector initializing ...')
         super().__init__()
         self._idf = count_idf(root_dir=texts_consts.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
