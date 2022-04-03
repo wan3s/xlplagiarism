@@ -5,26 +5,30 @@ from detectors.tfidf import definition as tfifd_definition
 from detectors.shingles import definition as shingles_definition
 from prepare_texts import common
 
+from progress import bar
+
 SHUFFLED_TEXTS = pathlib.Path('../shuffled')
 
 def main():
-    # labse_detector = labse_definition.LabseDetector()
-    # tfidf_detector = tfifd_definition.TfIdfDetector()
+    labse_detector = labse_definition.LabseDetector()
+    tfidf_detector = tfifd_definition.TfIdfDetector()
     shingles_detector = shingles_definition.ShinglesDetector()
-    for src_lang_file_path in common.TRANSLATED_TEXTS.glob(f'{common.SRC_LANG}/*'):
+    print('Preparing completed!')
+    src_texts_paths = [path for path in common.SHUFFLED_TEXTS.glob(f'{common.SRC_LANG}/*')][:10]
+    dst_texts_paths = [path for path in common.SHUFFLED_TEXTS.glob(f'{common.DST_LANG}/*')][:10]
+    progress_bar = bar.IncrementalBar('Counting idf', max=len(src_texts_paths) * len(dst_texts_paths))
+    for src_lang_file_path in src_texts_paths:
         with open(src_lang_file_path) as inp_file:
             src_lang_text = inp_file.read()
-        filename = src_lang_file_path.stem
-        dst_lang_file_path = common.TRANSLATED_TEXTS.joinpath(
-            f'{common.DST_LANG}/{filename}'
-        )
-        with open(dst_lang_file_path) as inp_file:
-            dst_lang_text = inp_file.read()
-        print(
-            # f'{filename}: {labse_detector.count_similiarity(src_lang_text, dst_lang_text)}'
-            # f'{filename}: {tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)}'
-            f'{filename}: {shingles_detector.count_similiarity(src_lang_text, dst_lang_text)}'
-        )
+        for dst_lang_file_path in dst_texts_paths:
+            with open(dst_lang_file_path) as inp_file:
+                dst_lang_text = inp_file.read()
+            labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
+            tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
+            shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
+            progress_bar.next()
+    progress_bar.finish()
+            
 
 
 if __name__ == '__main__':
