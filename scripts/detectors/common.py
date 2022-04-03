@@ -21,7 +21,7 @@ def translate_text(translator, text):
     while chunk_size >= 1:
         translated_text = []
         try:
-            for text in _by_chunks(splitted, chunk_size):
+            for text in _by_chunks(splitted, int(chunk_size)):
                 translated_text.append(
                     translator.translate(
                         ' '.join(text)

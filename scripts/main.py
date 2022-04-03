@@ -37,7 +37,8 @@ def main():
             tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
             shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
             acc = sum([originality[src_file_name][part] for part in intersection])
-            print(f'{src_file_name}:{dst_file_name},{acc},{labse_sim},{tfidf_sim}{shingles_sim}')
+            print(f'{src_file_name}:{dst_file_name},{acc},{labse_sim},{tfidf_sim},{shingles_sim}')
+            #print(f'{src_file_name}:{dst_file_name},{acc},{shingles_sim}')
             comparisons_num += 1
             # progress_bar.next()
     # progress_bar.finish()

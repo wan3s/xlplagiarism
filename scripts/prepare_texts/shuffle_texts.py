@@ -10,7 +10,7 @@ import common
 
 
 _COMBINED_TEXTS_NUM = 5
-_TOTAL_TEXTS_NUM = 5
+_TOTAL_TEXTS_NUM = 100
 
 
 def main():
