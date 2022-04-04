@@ -2,9 +2,8 @@ import deep_translator
 import hashlib
 import nltk
 
-from detectors import common
-
-from prepare_texts import common as texts_consts
+from scripts.detectors import common
+from scripts import consts
 
 _SHINGLE_LEN = 3
 
@@ -12,8 +11,8 @@ class ShinglesDetector(common.BaseDetector):
     def __init__(self) -> None:
         print('ShinglesDetector initializing ...')
         self._translator = deep_translator.GoogleTranslator(
-            source=texts_consts.SRC_LANG, 
-            target=texts_consts.DST_LANG
+            source=consts.SRC_LANG, 
+            target=consts.DST_LANG
         )
 
     def count_similiarity(self, src_lang_text: str, dst_lang_text: str):

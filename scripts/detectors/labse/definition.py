@@ -1,10 +1,9 @@
 import typing as tp
-
 import numpy as np
 
 from sentence_transformers import SentenceTransformer
 
-from detectors import common
+from scripts.detectors import common
 
 MODEL_URL = 'sentence-transformers/LaBSE'
 

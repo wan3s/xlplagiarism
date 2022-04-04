@@ -7,10 +7,10 @@ import deep_translator
 
 from progress import bar
 
-from . import common
+from .. import consts
 
 
-_RAW_TEXTS_ROOT = common.TRANSLATED_TEXTS.join('_raw')
+_RAW_TEXTS_ROOT = consts.TRANSLATED_TEXTS.join('_raw')
 _SENTENCES_NUM_IN_TEXT = 5
 
 def traverse_raw_texts(root_dir: pathlib.Path) -> str:
@@ -34,16 +34,16 @@ def split_raw_texts(raw_texts: str) -> tp.List[str]:
 
 def translate_texts(
     texts: tp.List[str], 
-    dst_lang: str = common.DST_LANG
+    dst_lang: str = consts.DST_LANG
 ) -> tp.Dict[str, tp.Dict[str, str]]:
     result = {}
-    translator = deep_translator.GoogleTranslator(source=common.SRC_LANG, target=dst_lang)
+    translator = deep_translator.GoogleTranslator(source=consts.SRC_LANG, target=dst_lang)
     progress_bar = bar.IncrementalBar('Translated texts', max=len(texts))
     for text in texts:
         file_name = _get_file_name_by_text(text)
         translated_text = translator.translate(text)
         result[file_name] = {
-            common.SRC_LANG: text,
+            consts.SRC_LANG: text,
             dst_lang: translated_text
         }
         progress_bar.next()
@@ -58,7 +58,7 @@ def save_translated_texts(translated_texts: tp.Dict[str, tp.Dict[str, str]]):
     )
     for file_name, texts in translated_texts.items():
         for lang, text in texts.items():
-            dir_path = common.TRANSLATED_TEXTS.joinpath(lang)
+            dir_path = consts.TRANSLATED_TEXTS.joinpath(lang)
             dir_path.mkdir(
                 parents=True, exist_ok=True
             )
