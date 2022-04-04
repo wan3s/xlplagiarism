@@ -13,7 +13,7 @@ class TfIdfDetector(common.BaseDetector):
     def __init__(self) -> None:
         print('TfIdfDetector initializing ...')
         super().__init__()
-        self._idf = count_idf(root_dir=common.TRANSLATED_TEXTS)
+        self._idf = count_idf(root_dir=consts.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
             source=consts.SRC_LANG, 
             target=consts.DST_LANG
