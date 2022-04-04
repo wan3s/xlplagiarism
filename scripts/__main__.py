@@ -1,5 +1,6 @@
 import argparse
 import random
+import time
 
 import consts
 from scripts.detectors.labse import definition as labse_definition
@@ -42,15 +43,23 @@ def run_experiments(args):
                 different_files_cntr += 1
             with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{dst_file_name}')) as inp_file:
                 dst_lang_text = inp_file.read()
-            labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
-            tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
-            shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
+            try:
+                labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
+                labse_improved_sim = labse_detector.count_similiarity_parts(src_lang_text, dst_lang_text)
+                tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
+                shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
+            except BaseException:
+                print('Exception gotten => continue')
+                time.sleep(5)
+                continue
             acc = sum([originality[src_file_name][part] for part in intersection])
-            acc, labse_sim, tfidf_sim, shingles_sim = [
-                str(x).replace('.', ',') for x in [acc, labse_sim, tfidf_sim, shingles_sim]
+            acc, labse_sim, labse_improved_sim, tfidf_sim, shingles_sim = [
+                str(x).replace('.', ',') for x in [acc, labse_sim, labse_improved_sim, tfidf_sim, shingles_sim]
             ]
-            res = f'{src_file_name}:{dst_file_name};{acc};{labse_sim};{tfidf_sim};{shingles_sim}'
-            #res = f'{src_file_name}:{dst_file_name};{acc}'
+            res = f'{src_file_name}:{dst_file_name};{acc};{labse_sim};{labse_improved_sim};{tfidf_sim};{shingles_sim}'
+            #acc = str(acc).replace('.', ',')
+            #labse_improved_sim = str(labse_improved_sim).replace('.', ',')
+            #res = f'{src_file_name}:{dst_file_name};{acc};{labse_improved_sim}'
             res_output.append(res)
             print(res)
             comparisons_num += 1
