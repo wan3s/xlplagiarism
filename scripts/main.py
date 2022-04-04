@@ -1,9 +1,9 @@
 import pathlib
 
-from detectors.labse import definition as labse_definition
-from detectors.tfidf import definition as tfifd_definition
-from detectors.shingles import definition as shingles_definition
-from detectors import common
+from scripts.detectors.labse import definition as labse_definition
+from scripts.detectors.tfidf import definition as tfifd_definition
+from scripts.detectors.shingles import definition as shingles_definition
+from scripts import consts
 
 from progress import bar
 
@@ -16,10 +16,10 @@ def main():
     labse_detector = labse_definition.LabseDetector()
     tfidf_detector = tfifd_definition.TfIdfDetector()
     shingles_detector = shingles_definition.ShinglesDetector()
-    with open(common.SHUFFLED_TEXTS.joinpath('originality')) as inp_file:
+    with open(consts.SHUFFLED_TEXTS.joinpath('originality')) as inp_file:
         originality = eval(inp_file.read())
     print('Preparing completed!')
-    src_texts_paths = [path for path in common.SHUFFLED_TEXTS.glob(f'{common.SRC_LANG}/*')][:10]
+    src_texts_paths = [path for path in consts.SHUFFLED_TEXTS.glob(f'{consts.SRC_LANG}/*')][:10]
     # progress_bar = bar.IncrementalBar('Comparison', max=len(src_texts_paths))
     different_files_cntr = 0
     for src_lang_file_path in src_texts_paths:
@@ -35,7 +35,7 @@ def main():
                 if different_files_cntr > DIFFERENT_FILES_NUM:
                     continue
                 different_files_cntr += 1
-            with open(common.SHUFFLED_TEXTS.joinpath(f'{common.DST_LANG}/{dst_file_name}')) as inp_file:
+            with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{dst_file_name}')) as inp_file:
                 dst_lang_text = inp_file.read()
             labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
             tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)

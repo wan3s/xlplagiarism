@@ -1,14 +1,12 @@
-from collections import defaultdict
 import collections
 import deep_translator
 import math
-from turtle import st
 import nltk
 import typing as tp
-
-from detectors import common
-from prepare_texts import common as texts_consts
 from progress import bar
+
+from scripts.detectors import common
+from scripts import consts
 
 
 class TfIdfDetector(common.BaseDetector):
@@ -17,8 +15,8 @@ class TfIdfDetector(common.BaseDetector):
         super().__init__()
         self._idf = count_idf(root_dir=common.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
-            source=texts_consts.SRC_LANG, 
-            target=texts_consts.DST_LANG
+            source=consts.SRC_LANG, 
+            target=consts.DST_LANG
         )
 
     def count_similiarity(self, src_lang_text, dst_lang_text):
@@ -55,8 +53,8 @@ def _vect_len(vect):
     )
 
 def count_idf(root_dir):
-    idf = defaultdict(int)
-    files_paths = [path for path in root_dir.glob(f'{texts_consts.DST_LANG}/*')]
+    idf = collections.defaultdict(int)
+    files_paths = [path for path in root_dir.glob(f'{consts.DST_LANG}/*')]
     n = len(files_paths)
     progress_bar = bar.IncrementalBar('Counting idf', max=n)
     for src_lang_file_path in files_paths:
