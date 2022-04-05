@@ -2,7 +2,7 @@ import deep_translator
 import hashlib
 import nltk
 
-from scripts.detectors import common
+from detectors import common
 from scripts import consts
 
 _SHINGLE_LEN = 3

@@ -9,14 +9,12 @@ from progress import bar
 from scripts import consts
 
 
-_COMBINED_TEXTS_NUM = 5
-_TOTAL_TEXTS_NUM = 10000
-
-
 def main():
     src_lang_texts = traverse_texts(consts.TRANSLATED_TEXTS.joinpath(consts.SRC_LANG))
     dst_lang_texts = traverse_texts(consts.TRANSLATED_TEXTS.joinpath(consts.DST_LANG))
-    shuffled, originality = shuffle_texts(src_lang_texts)
+    shuffled, originality = shuffle_texts(
+        {name: src_lang_texts[name] for name in list(src_lang_texts.keys())[:consts.SRC_TEXTS_TO_SHUFFLE]}
+    )
     make_texts(shuffled, src_lang_texts, consts.SRC_LANG)
     make_texts(shuffled, dst_lang_texts, consts.DST_LANG)
     with open(consts.SHUFFLED_TEXTS.joinpath('originality'), 'w') as out_file:
@@ -36,29 +34,31 @@ def shuffle_texts(src_texts):
     texts_originalities = collections.defaultdict(dict)
     result_texts = {}
     texts_lenghts = get_texts_lengths(src_texts)
+    total_texts_num = (consts.MAX_PIECE_NUMS - consts.MIN_PIECE_NUMS + 1) * consts.EACH_CATEGORY_TEXTS_NUM
     progress_bar = bar.IncrementalBar(
         'Shuffled texts', 
-        max=_TOTAL_TEXTS_NUM
+        max=total_texts_num
     )
-    while len(result_texts) < _TOTAL_TEXTS_NUM:
-        new_text = []
-        while len(new_text) < _COMBINED_TEXTS_NUM:
-            cur_text = random.choice(list(src_texts.keys()))
-            if cur_text not in new_text:
-                new_text.append(cur_text)
-        hash_object = hashlib.md5(
-            str(new_text).encode()
-        )
-        new_text_name = hash_object.hexdigest()
-        total_len = sum(
-            [texts_lenghts[text_hash] for text_hash in new_text]
-        )
-        for text_hash in new_text:
-            texts_originalities[new_text_name][text_hash] = (
-                texts_lenghts[text_hash] / total_len
+    for combined_texts_num in range(consts.MIN_PIECE_NUMS, consts.MAX_PIECE_NUMS + 1):
+        for _ in range(consts.EACH_CATEGORY_TEXTS_NUM):
+            new_text = []
+            while len(new_text) < combined_texts_num:
+                cur_text = random.choice(list(src_texts.keys()))
+                if cur_text not in new_text:
+                    new_text.append(cur_text)
+            hash_object = hashlib.md5(
+                str(new_text).encode()
             )
-        result_texts[new_text_name] = new_text
-        progress_bar.next()
+            new_text_name = hash_object.hexdigest()
+            total_len = sum(
+                [texts_lenghts[text_hash] for text_hash in new_text]
+            )
+            for text_hash in new_text:
+                texts_originalities[new_text_name][text_hash] = (
+                    texts_lenghts[text_hash] / total_len
+                )
+            result_texts[new_text_name] = new_text
+            progress_bar.next()
     progress_bar.finish()
     return result_texts, texts_originalities
         

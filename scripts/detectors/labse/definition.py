@@ -1,3 +1,4 @@
+import nltk
 import typing as tp
 import numpy as np
 
@@ -6,6 +7,7 @@ from sentence_transformers import SentenceTransformer
 from scripts.detectors import common
 
 MODEL_URL = 'sentence-transformers/LaBSE'
+SIM_THRESHOLD = 0.6
 
 class LabseDetector(common.BaseDetector):
   def __init__(self, *args, **kwargs):
@@ -18,3 +20,21 @@ class LabseDetector(common.BaseDetector):
       self._model.encode(text) for text in [[src_lang_text], [dst_lang_text]]
     ]
     return np.diag(np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings)))[0]
+
+  def count_similiarity_parts(self, src_lang_text: str, dst_lang_text: str):
+    src_sentences = nltk.sent_tokenize(src_lang_text)
+    dst_sentences = nltk.sent_tokenize(dst_lang_text)
+    src_lang_embeddings = self._model.encode(src_sentences)
+    dst_lang_embeddings = self._model.encode(dst_sentences)
+    res = np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings))
+    sim_sentences = []
+    for j in range(len(src_sentences)):
+      max_sim = 0
+      for i in range(len(dst_sentences)):
+        max_sim = max(max_sim, res[i][j])
+      if max_sim >= SIM_THRESHOLD:
+        sim_sentences.append(j)
+    sim_sentences_text = ' '.join(
+      src_sentences[idx] for idx in sim_sentences
+    )
+    return len(nltk.tokenize.word_tokenize(sim_sentences_text)) / len(nltk.tokenize.word_tokenize(src_lang_text))

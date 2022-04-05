@@ -7,11 +7,10 @@ import deep_translator
 
 from progress import bar
 
-from .. import consts
+from scripts import consts
 
 
-_RAW_TEXTS_ROOT = consts.TRANSLATED_TEXTS.join('_raw')
-_SENTENCES_NUM_IN_TEXT = 5
+_RAW_TEXTS_ROOT = consts.TRANSLATED_TEXTS.joinpath('_raw')
 
 def traverse_raw_texts(root_dir: pathlib.Path) -> str:
     all_texts = ''
@@ -26,9 +25,9 @@ def split_raw_texts(raw_texts: str) -> tp.List[str]:
     splited_sentences = nltk.sent_tokenize(raw_texts)
     while (splited_sentences):
         result.append(
-            ''.join(splited_sentences[:_SENTENCES_NUM_IN_TEXT])
+            ''.join(splited_sentences[:consts.TEXTS_PIECE_SIZE])
         )
-        splited_sentences = splited_sentences[_SENTENCES_NUM_IN_TEXT:]
+        splited_sentences = splited_sentences[consts.TEXTS_PIECE_SIZE:]
     return result
 
 
@@ -78,7 +77,7 @@ def main():
     splitted_texts = split_raw_texts(raw_texts)
     print(
         f'Gotten {len(splitted_texts)} texts '
-        f'contained <= {_SENTENCES_NUM_IN_TEXT} sentences'
+        f'contained <= {consts.TEXTS_PIECE_SIZE} sentences'
     )
     translated_texts = translate_texts(splitted_texts)
     print(
