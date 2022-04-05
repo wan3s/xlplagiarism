@@ -11,17 +11,17 @@ from scripts.prepare_texts import shuffle_texts as shuffle_prepared_texts
 
 from progress import bar
 
-MAX_DST_FILES = 10
+MAX_DST_FILES = 5
 DIFFERENT_FILES_NUM = 10
 
 def run_experiments(args):
-    labse_detector = labse_definition.LabseDetector()
-    tfidf_detector = tfifd_definition.TfIdfDetector()
-    shingles_detector = shingles_definition.ShinglesDetector()
+    labse_detector = labse_definition.LabseDetector(sim_threshold=args.labse_sim_threshold)
+    #tfidf_detector = tfifd_definition.TfIdfDetector()
+    #shingles_detector = shingles_definition.ShinglesDetector()
     with open(consts.SHUFFLED_TEXTS.joinpath('originality')) as inp_file:
         originality = eval(inp_file.read())
     print('Preparing completed!')
-    src_texts_paths = [path for path in consts.SHUFFLED_TEXTS.glob(f'{consts.SRC_LANG}/*')][:100]
+    src_texts_paths = [path for path in consts.SHUFFLED_TEXTS.glob(f'{consts.SRC_LANG}/*')][:50]
     #progress_bar = bar.IncrementalBar('Comparison', max=len(src_texts_paths) * MAX_DST_FILES)
     different_files_cntr = 0
     res_output = []
@@ -44,28 +44,29 @@ def run_experiments(args):
             with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{dst_file_name}')) as inp_file:
                 dst_lang_text = inp_file.read()
             try:
-                labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
+                #labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
                 labse_improved_sim = labse_detector.count_similiarity_parts(src_lang_text, dst_lang_text)
-                tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
-                shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
+                #tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
+                #shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
             except BaseException:
                 print('Exception gotten => continue')
                 time.sleep(5)
                 continue
             acc = sum([originality[src_file_name][part] for part in intersection])
-            acc, labse_sim, labse_improved_sim, tfidf_sim, shingles_sim = [
-                str(x).replace('.', ',') for x in [acc, labse_sim, labse_improved_sim, tfidf_sim, shingles_sim]
-            ]
-            res = f'{src_file_name}:{dst_file_name};{acc};{labse_sim};{labse_improved_sim};{tfidf_sim};{shingles_sim}'
-            #acc = str(acc).replace('.', ',')
-            #labse_improved_sim = str(labse_improved_sim).replace('.', ',')
-            #res = f'{src_file_name}:{dst_file_name};{acc};{labse_improved_sim}'
+            #acc, labse_improved_sim, tfidf_sim, shingles_sim = [
+            #    str(x).replace('.', ',') for x in [acc, labse_improved_sim, tfidf_sim, shingles_sim]
+            #]
+            #res = f'{src_file_name}:{dst_file_name};{acc};{labse_improved_sim};{tfidf_sim};{shingles_sim}'
+            acc = str(acc).replace('.', ',')
+            #labse_sim = str(labse_sim).replace('.', ',')
+            labse_improved_sim = str(labse_improved_sim).replace('.', ',')
+            res = f'{src_file_name}:{dst_file_name};{acc};{labse_improved_sim}'
             res_output.append(res)
             print(res)
             comparisons_num += 1
             #progress_bar.next()
     #progress_bar.finish()
-    with open('result.csv', 'w') as out_file:
+    with open(f'{args.outfile_name}.csv', 'w') as out_file:
         out_file.write('\n'.join(res_output))
 
 
@@ -82,6 +83,8 @@ def main():
     parser.add_argument('--prepare-texts',  action='store_true')
     parser.add_argument('--shuffle-texts', action='store_true')
     parser.add_argument('--run-experiments', action='store_true')
+    parser.add_argument('--outfile-name', default='result')
+    parser.add_argument('--labse-sim-threshold', default=consts.LABSE_SIM_THRESHOLD, type=float)
     args = parser.parse_args()
 
     if args.prepare_texts:
