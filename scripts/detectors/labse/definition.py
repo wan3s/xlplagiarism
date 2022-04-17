@@ -7,12 +7,13 @@ from sentence_transformers import SentenceTransformer
 from scripts.detectors import common
 
 MODEL_URL = 'sentence-transformers/LaBSE'
-SIM_THRESHOLD = 0.6
 
 class LabseDetector(common.BaseDetector):
-  def __init__(self, *args, **kwargs):
+  def __init__(self, *args, sim_threshold, **kwargs):
     print('LabseDetector initializing ...')
     super().__init__(*args, **kwargs)
+    self._sim_threshold = sim_threshold
+    print(f'LabseDetector sim threshold: {self._sim_threshold}')
     self._model = SentenceTransformer(MODEL_URL)
 
   def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
@@ -32,7 +33,7 @@ class LabseDetector(common.BaseDetector):
       max_sim = 0
       for i in range(len(dst_sentences)):
         max_sim = max(max_sim, res[i][j])
-      if max_sim >= SIM_THRESHOLD:
+      if max_sim >= self._sim_threshold:
         sim_sentences.append(j)
     sim_sentences_text = ' '.join(
       src_sentences[idx] for idx in sim_sentences
