@@ -8,17 +8,24 @@ from scripts import consts
 _SHINGLE_LEN = 3
 
 class ShinglesDetector(common.BaseDetector):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, translate=None, **kwargs) -> None:
         print('ShinglesDetector initializing ...')
         super().__init__(*args, **kwargs)
         self._translator = deep_translator.GoogleTranslator(
             source=consts.SRC_LANG, 
             target=consts.DST_LANG
         )
+        if translate is not None:
+            self._translate = translate
+        else:
+            self._translate = True
 
     def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
-        translated_text =  common.translate_text(self._translator, src_lang_text)
-        src_hashes = _shingle_text(translated_text)
+        if self._translate:
+            translated_text =  common.translate_text(self._translator, src_lang_text)
+            src_hashes = _shingle_text(translated_text)
+        else:
+            src_hashes = _shingle_text(src_lang_text)
         dst_hashes = _shingle_text(dst_lang_text)
         return len(src_hashes.intersection(dst_hashes)) / len(src_hashes)
 

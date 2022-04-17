@@ -3,6 +3,7 @@ import random
 import time
 
 from scripts import consts
+from scripts.compare_translators import main as compare_translators
 from scripts.detectors.labse import definition as labse_definition
 from scripts.detectors.tfidf import definition as tfifd_definition
 from scripts.detectors.shingles import definition as shingles_definition
@@ -60,14 +61,6 @@ def run_experiments(args):
             comparisons_num += 1
     with open(f'{args.outfile_name}.csv', 'w') as out_file:
         out_file.write('\n'.join(res_output))
-
-
-def prepare_texts(args):
-    prepare_wikipedia_texts.main()
-
-
-def shuffle_texts(args):
-    shuffle_prepared_texts.main()
     
 
 def main():
@@ -75,16 +68,23 @@ def main():
     parser.add_argument('--prepare-texts',  action='store_true')
     parser.add_argument('--shuffle-texts', action='store_true')
     parser.add_argument('--run-experiments', action='store_true')
+    parser.add_argument('--compare-translators', action='store_true')
     parser.add_argument('--outfile-name', default='result')
     parser.add_argument('--labse-sim-threshold', default=consts.LABSE_SIM_THRESHOLD, type=float)
     args = parser.parse_args()
 
     if args.prepare_texts:
-        prepare_texts(args)
+        print('Preparing texts started ...')
+        prepare_wikipedia_texts.main()
     if args.shuffle_texts:
-        shuffle_texts(args)
+        print('Shuffling texts strated ...')
+        shuffle_prepared_texts.main()
     if args.run_experiments:
+        print('Running experiments strated ...')
         run_experiments(args)
+    if args.compare_translators:
+        print('Comparing translators strated ...')
+        compare_translators.run(args)
 
 if __name__ == '__main__':
     main()
