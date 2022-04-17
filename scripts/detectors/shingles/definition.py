@@ -2,14 +2,15 @@ import deep_translator
 import hashlib
 import nltk
 
-from detectors import common
+from scripts.detectors import common
 from scripts import consts
 
 _SHINGLE_LEN = 3
 
 class ShinglesDetector(common.BaseDetector):
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         print('ShinglesDetector initializing ...')
+        super().__init__(*args, **kwargs)
         self._translator = deep_translator.GoogleTranslator(
             source=consts.SRC_LANG, 
             target=consts.DST_LANG

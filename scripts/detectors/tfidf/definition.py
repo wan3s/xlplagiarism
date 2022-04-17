@@ -10,9 +10,9 @@ from scripts import consts
 
 
 class TfIdfDetector(common.BaseDetector):
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         print('TfIdfDetector initializing ...')
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self._idf = count_idf(root_dir=consts.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
             source=consts.SRC_LANG, 
