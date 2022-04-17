@@ -16,13 +16,13 @@ class LabseDetector(common.BaseDetector):
     print(f'LabseDetector sim threshold: {self._sim_threshold}')
     self._model = SentenceTransformer(MODEL_URL)
 
-  def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
+  def count_similiarity_whole_text(self, src_lang_text: str, dst_lang_text: str):
     src_lang_embeddings, dst_lang_embeddings = [
       self._model.encode(text) for text in [[src_lang_text], [dst_lang_text]]
     ]
     return np.diag(np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings)))[0]
 
-  def count_similiarity_parts(self, src_lang_text: str, dst_lang_text: str):
+  def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
     src_sentences = nltk.sent_tokenize(src_lang_text)
     dst_sentences = nltk.sent_tokenize(dst_lang_text)
     src_lang_embeddings = self._model.encode(src_sentences)

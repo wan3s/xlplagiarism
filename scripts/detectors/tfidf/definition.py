@@ -10,18 +10,25 @@ from scripts import consts
 
 
 class TfIdfDetector(common.BaseDetector):
-    def __init__(self) -> None:
+    def __init__(self, *args, translate=None, **kwargs) -> None:
         print('TfIdfDetector initializing ...')
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self._idf = count_idf(root_dir=consts.TRANSLATED_TEXTS)
         self._translator = deep_translator.GoogleTranslator(
             source=consts.SRC_LANG, 
             target=consts.DST_LANG
         )
+        if translate is not None:
+            self._translate = translate
+        else:
+            self._translate = True
 
     def count_similiarity(self, src_lang_text, dst_lang_text):
-        translated_text = common.translate_text(self._translator, src_lang_text)
-        src_tf_ifd = self.count_tf_idf(translated_text)
+        if self._translate:
+            translated_text = common.translate_text(self._translator, src_lang_text)
+            src_tf_ifd = self.count_tf_idf(translated_text)
+        else:
+            src_tf_ifd = self.count_tf_idf(src_lang_text)
         dst_tf_idf = self.count_tf_idf(dst_lang_text)
         words_union = list(set().union(src_tf_ifd, dst_tf_idf))
         v1, v2 = _get_vect_by(words_union, src_tf_ifd), _get_vect_by(words_union, dst_tf_idf)
