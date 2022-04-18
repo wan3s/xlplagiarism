@@ -40,7 +40,7 @@ def run_experiments(args):
             with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{dst_file_name}')) as inp_file:
                 dst_lang_text = inp_file.read()
             try:
-                labse_sim = labse_detector.count_similiarity_parts(src_lang_text, dst_lang_text)
+                labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)
                 tfidf_sim = tfidf_detector.count_similiarity(src_lang_text, dst_lang_text)
                 shingles_sim = shingles_detector.count_similiarity(src_lang_text, dst_lang_text)
             except BaseException:
