@@ -23,6 +23,10 @@ class LabseDetector(common.BaseDetector):
     return np.diag(np.matmul(dst_lang_embeddings, np.transpose(src_lang_embeddings)))[0]
 
   def count_similiarity(self, src_lang_text: str, dst_lang_text: str):
+    coef, _ = self.get_sim_sentences(src_lang_text, dst_lang_text)
+    return coef
+
+  def get_sim_sentences(self, src_lang_text: str, dst_lang_text: str):
     src_sentences = nltk.sent_tokenize(src_lang_text)
     dst_sentences = nltk.sent_tokenize(dst_lang_text)
     src_lang_embeddings = self._model.encode(src_sentences)
@@ -38,4 +42,6 @@ class LabseDetector(common.BaseDetector):
     sim_sentences_text = ' '.join(
       src_sentences[idx] for idx in sim_sentences
     )
-    return len(nltk.tokenize.word_tokenize(sim_sentences_text)) / len(nltk.tokenize.word_tokenize(src_lang_text))
+    coef = len(nltk.tokenize.word_tokenize(sim_sentences_text)) / len(nltk.tokenize.word_tokenize(src_lang_text))
+    return coef, sim_sentences_text
+
