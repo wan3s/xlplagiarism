@@ -13,6 +13,14 @@ TEXTS_PIECE_SIZE = 3  # num of sentences in one piece
 MIN_PIECE_NUMS = 3
 MAX_PIECE_NUMS = 7
 
+VALIDATION_DATASET = 'validation'
+TEST_DATASET = 'test'
+
+SHUFFLED_TEXTS_SUBDIRS = [
+    VALIDATION_DATASET,
+    TEST_DATASET,
+]
+
 # labse
 LABSE_SIM_THRESHOLD = 0.7
 
