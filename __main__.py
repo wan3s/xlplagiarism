@@ -37,6 +37,11 @@ def main():
     parser.add_argument('--shuffle-texts', action='store_true')
     parser.add_argument('--run-experiments', action='store_true')
     parser.add_argument('--compare-translators', action='store_true')
+    parser.add_argument(
+        '--dataset',
+        default=consts.TEST_DATASET, 
+        choices=consts.SHUFFLED_TEXTS_SUBDIRS,
+    )
     parser.add_argument('--run-program', action='store_true')
     parser.add_argument('--outfile-name', default='result')
     parser.add_argument('--input-files', nargs=2)

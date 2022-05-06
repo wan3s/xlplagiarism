@@ -16,9 +16,10 @@ def run_experiments(args):
     tfidf_detector = tfifd_definition.TfIdfDetector()
     shingles_detector = shingles_definition.ShinglesDetector()
     with open(consts.SHUFFLED_TEXTS.joinpath('originality')) as inp_file:
-        originality = eval(inp_file.read())
+        originality = eval(inp_file.read())[args.dataset]
     print('Preparing completed!')
-    src_texts_paths = [path for path in consts.SHUFFLED_TEXTS.glob(f'{consts.SRC_LANG}/*')][:5]
+    shuffled_texts_dir = consts.SHUFFLED_TEXTS.joinpath(args.dataset)
+    src_texts_paths = [path for path in shuffled_texts_dir.glob(f'{consts.SRC_LANG}/*')][:5]
     different_files_cntr = 0
     res_output = []
     for src_lang_file_path in src_texts_paths:
@@ -37,7 +38,7 @@ def run_experiments(args):
                 if different_files_cntr > DIFFERENT_FILES_NUM:
                     continue
                 different_files_cntr += 1
-            with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{dst_file_name}')) as inp_file:
+            with open(consts.SHUFFLED_TEXTS.joinpath(f'{args.dataset}/{consts.DST_LANG}/{dst_file_name}')) as inp_file:
                 dst_lang_text = inp_file.read()
             try:
                 labse_sim = labse_detector.count_similiarity(src_lang_text, dst_lang_text)

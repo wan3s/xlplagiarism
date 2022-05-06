@@ -58,11 +58,13 @@ def _by_chunks(arr, chunk_size):
 
 
 def check_translators_for_detector(
+    args,
     detector: common.BaseDetector, 
     translator: deep_translator.base.BaseTranslator,
     experiment_name: tp.Optional[str] = None,
 ):
-    texts_paths = [path for path in consts.SHUFFLED_TEXTS.glob(f'{consts.SRC_LANG}/*')][:20]
+    shuffled_texts_dir = consts.SHUFFLED_TEXTS.joinpath(args.dataset)
+    texts_paths = [path for path in shuffled_texts_dir.glob(f'{consts.SRC_LANG}/*')][:20]
     result = {}
     progress_bar = bar.IncrementalBar(experiment_name or 'Experiment', max=len(texts_paths))
     for text_path in texts_paths:
@@ -70,7 +72,7 @@ def check_translators_for_detector(
         filename = text_path.stem
         with open(text_path, 'r') as inp_file:
             src_lang_text = inp_file.read()
-        with open(consts.SHUFFLED_TEXTS.joinpath(f'{consts.DST_LANG}/{filename}'), 'r') as inp_file:
+        with open(consts.SHUFFLED_TEXTS.joinpath(f'{args.dataset}/{consts.DST_LANG}/{filename}'), 'r') as inp_file:
             dst_lang_text = inp_file.read()
         translated_src_lang_text = translate_text(translator, dst_lang_text)
         result[filename] = str(detector.count_similiarity(src_lang_text, translated_src_lang_text)).replace('.', ',')
@@ -108,7 +110,7 @@ def run(args):
         for translator, translator_name in translators:
             exp_name = f'{detector_name}-{translator_name}'
             head.append(exp_name)
-            result = check_translators_for_detector(detector, translator, exp_name)
+            result = check_translators_for_detector(args, detector, translator, exp_name)
             for filename, coef in result.items():
                 total_result[filename].append(coef)
     with open(f'{args.outfile_name}.tsv', 'a') as out_file:
