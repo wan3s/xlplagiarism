@@ -26,3 +26,17 @@ LABSE_SIM_THRESHOLD = 0.7
 
 EACH_CATEGORY_TEXTS_NUM = 100
 SRC_TEXTS_TO_SHUFFLE = 200
+
+# comparing on public datasets
+
+CHUNK_MASKS = pathlib.Path('xlplagiarism/texts/datasets/masks/taln-chunk')
+DOCS_MASKS = pathlib.Path('xlplagiarism/texts/datasets/masks/taln-document')
+SENTENCE_MASKS = pathlib.Path('xlplagiarism/texts/datasets/masks/taln-sentence')
+
+CONF_PAPERS_CHUNKS_EN = pathlib.Path('xlplagiarism/texts/datasets/dataset/chunks/Conference_papers/en')
+CONF_PAPERS_DOCS_EN = pathlib.Path('xlplagiarism/texts/datasets/dataset/documents/Conference_papers/en')
+CONF_PAPERS_SENTENCES_EN = pathlib.Path('xlplagiarism/texts/datasets/dataset/sentences/Conference_papers/en')
+
+CONF_PAPERS_CHUNKS_FR = pathlib.Path('xlplagiarism/texts/datasets/dataset/chunks/Conference_papers/fr')
+CONF_PAPERS_DOCS_FR = pathlib.Path('xlplagiarism/texts/datasets/dataset/documents/Conference_papers/fr')
+CONF_PAPERS_SENTENCES_FR = pathlib.Path('xlplagiarism/texts/datasets/dataset/sentences/Conference_papers/fr')
