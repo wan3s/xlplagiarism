@@ -17,7 +17,7 @@ def run(args):
         for masks in masks_dir.glob('*'):
             tn_fp_fn_tp = [0, 0, 0, 0]
             with open(masks, 'r') as mask_file:
-                mask_file_lines = [x for x in mask_file.read().split('\n') if x][:10]
+                mask_file_lines = [x for x in mask_file.read().split('\n') if x]
             progress_bar = bar.IncrementalBar(f'Comparing on {level}-level', max=len(mask_file_lines))
             for mask_file_line in mask_file_lines:
                 mask = json.loads(mask_file_line)
@@ -30,9 +30,11 @@ def run(args):
                         en_text = en_inp_file.read()
                 except FileNotFoundError:
                     print('File not found => continue')
-                etal = int(mask[0] == mask[1])
-                y = int(labse_detector.count_similiarity_whole_text(fr_text, en_text))
+                etal = int(mask['0'] == mask['1'])
+                y = int(labse_detector.count_similiarity_whole_text(fr_text, en_text) > labse_detector.sim_threshold)
+                tn_fp_fn_tp[y + etal * 2] += 1
                 progress_bar.next()
+            print(f'\ntn_fp_fn_tp: {tn_fp_fn_tp}')
             progress_bar.finish()
 
 
