@@ -16,6 +16,10 @@ class LabseDetector(common.BaseDetector):
     print(f'LabseDetector sim threshold: {self._sim_threshold}')
     self._model = SentenceTransformer(MODEL_URL)
 
+  @property
+  def sim_threshold(self):
+    return self._sim_threshold
+
   def count_similiarity_whole_text(self, src_lang_text: str, dst_lang_text: str):
     src_lang_embeddings, dst_lang_embeddings = [
       self._model.encode(text) for text in [[src_lang_text], [dst_lang_text]]
