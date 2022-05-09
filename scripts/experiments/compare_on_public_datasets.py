@@ -46,9 +46,9 @@ def run(args):
             progress_bar_content_coll.finish()
                 
             without_threads_start = time.time()
-            progress_bar_comp = bar.IncrementalBar(f'Comparing on {level}-level', max=len(loaded_masks))
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = []
+                progress_bar_comp = bar.IncrementalBar(f'Comparing on {level}-level', max=len(loaded_masks))
                 for mask in loaded_masks:
                     fr_text_file, en_text_file = mask['2'], mask['3']
                     progress_bar_comp.next()
@@ -59,11 +59,14 @@ def run(args):
                         idx = y + etal * 2
                         return idx
                     futures.append(executor.submit(_worker, fr_text_file, en_text_file))
+                progress_bar_comp.finish()
+                progress_bar_res = bar.IncrementalBar(f'Result on {level}-level', max=len(loaded_masks))
                 for future in concurrent.futures.as_completed(futures):
+                    progress_bar_res.next()
                     idx = future.result()
                     tn_fp_fn_tp[idx] += 1
                     total_tn_fp_fn_tp[idx] += 1
-            progress_bar_comp.finish()
+                progress_bar_res.finish()
             print(f'\ntn_fp_fn_tp: {tn_fp_fn_tp}')
             print(time.time() - without_threads_start)
         print(f'\nTOTAL tn_fp_fn_tp: {total_tn_fp_fn_tp}')
