@@ -40,8 +40,6 @@ def run(args):
                 except FileNotFoundError:
                     print('File not found => continue')
                     pass
-                if fr_file_template != en_file_template:
-                    continue
                 loaded_masks.append(
                     {
                         'equal': int(fr_file_template == en_file_template),
