@@ -23,7 +23,7 @@ def main():
     )
     parser.add_argument('--run-program', action='store_true')
     parser.add_argument('--outfile-name', default='result')
-    parser.add_argument('--input-file', nargs=1)
+    parser.add_argument('--input-file')
     parser.add_argument('--labse-sim-threshold', default=consts.LABSE_SIM_THRESHOLD, type=float)
     args = parser.parse_args()
 

@@ -14,18 +14,19 @@ def run_program(args):
     with open(args.input_file, 'r') as inp_file:
         raw_text = inp_file.read()
 
-    dst_lang_texts = traverse_texts(consts.TRANSLATED_TEXTS.joinpath(consts.DST_LANG))
+    # dst_lang_texts = traverse_texts(consts.TRANSLATED_TEXTS.joinpath(consts.DST_LANG))
+    dst_lang_texts = traverse_texts(consts.TRANSLATED_TEXTS.joinpath('test'))
     total_sim_sentences = []
     raw_text_sentences = [x for x in nltk.sent_tokenize(raw_text) if x]
     total_coef = 1
     progress_bar = bar.IncrementalBar('Comparing ', max=len(dst_lang_texts))
-    for dst_lang_text in dst_lang_texts:
+    for dst_lang_text in dst_lang_texts.values():
         progress_bar.next()
         if not raw_text_sentences:
             progress_bar.finish()
             break
         coef, sim_sentences_text = labse_detector.get_sim_sentences(
-            '. '.join(raw_text_sentences), 
+            ' '.join(raw_text_sentences), 
             dst_lang_text,
         )
         total_coef *= (1 - coef)
