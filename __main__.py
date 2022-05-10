@@ -4,6 +4,7 @@ from scripts import consts
 from scripts.experiments import compare_detectors
 from scripts.experiments import compare_on_public_datasets
 from scripts.experiments import compare_translators
+from scripts.mvp import core as model_system
 from scripts.prepare_texts import prepare_wikipedia_texts
 from scripts.prepare_texts import shuffle_texts as shuffle_prepared_texts
 
@@ -40,7 +41,7 @@ def main():
         compare_translators.run(args)
     if args.run_program:
         print('Running program ...')
-        run_program(args)
+        model_system.run_program(args)
     if args.run_on_public_datasets:
         print('Comparing methods on public datasets ...')
         compare_on_public_datasets.run(args)

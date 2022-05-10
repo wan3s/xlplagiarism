@@ -4,6 +4,7 @@ import pathlib
 from scripts import consts
 from scripts.detectors.labse import definition as labse_definition
 
+from progress import bar
 
 def run_program(args):
     if not args.input_file:
@@ -17,8 +18,11 @@ def run_program(args):
     total_sim_sentences = []
     raw_text_sentences = [x for x in nltk.sent_tokenize(raw_text) if x]
     total_coef = 1
+    progress_bar = bar.IncrementalBar('Comparing ', max=len(dst_lang_texts))
     for dst_lang_text in dst_lang_texts:
+        progress_bar.next()
         if not raw_text_sentences:
+            progress_bar.finish()
             break
         coef, sim_sentences_text = labse_detector.get_sim_sentences(
             '. '.join(raw_text_sentences), 
@@ -28,7 +32,7 @@ def run_program(args):
         sim_sentences = [x for x in nltk.sent_tokenize(sim_sentences_text) if x]
         raw_text_sentences = [x for x in raw_text_sentences if x not in sim_sentences]
         total_sim_sentences += sim_sentences
-    
+    progress_bar.finish()
     if total_coef >= 0.7:
         print(f'Originality={total_coef}: these texts are completely different')
     elif total_coef >= 0.3:
