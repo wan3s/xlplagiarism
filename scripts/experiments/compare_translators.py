@@ -3,6 +3,7 @@ import deep_translator
 import nltk
 import typing as tp
 import time
+import pymorphy2
 
 from progress import bar
 
@@ -12,6 +13,29 @@ from scripts.detectors.labse import definition as labse_definition
 from scripts.detectors.tfidf import definition as tfifd_definition
 from scripts.detectors.shingles import definition as shingles_definition
 
+
+def normalize_word(word):
+    morph_analyzer = pymorphy2.MorphAnalyzer()
+    normal_forms = []
+    for lemm in morph_analyzer.parse(word):
+        normal_forms.append(lemm.normal_form)
+    counter = collections.Counter(normal_forms).most_common()
+    return counter[0][0]
+
+
+def prepare_text(text):
+    result_text = ''.join(
+        [
+            symb for symb in text.lower()
+            if symb.isalpha() or symb == ' '
+        ]
+    ).replace('  ', ' ')
+    return ' '.join(
+        [
+            normalize_word(word)
+            for word in result_text.split(' ')
+        ]
+    )
 
 def translate_text(translator, text):
     splitted = nltk.sent_tokenize(text)
@@ -64,7 +88,7 @@ def check_translators_for_detector(
     experiment_name: tp.Optional[str] = None,
 ):
     shuffled_texts_dir = consts.SHUFFLED_TEXTS.joinpath(args.dataset)
-    texts_paths = [path for path in shuffled_texts_dir.glob(f'{consts.SRC_LANG}/*')][:20]
+    texts_paths = [path for path in shuffled_texts_dir.glob(f'{consts.SRC_LANG}/*')][:100]
     result = {}
     progress_bar = bar.IncrementalBar(experiment_name or 'Experiment', max=len(texts_paths))
     for text_path in texts_paths:
@@ -75,6 +99,9 @@ def check_translators_for_detector(
         with open(consts.SHUFFLED_TEXTS.joinpath(f'{args.dataset}/{consts.DST_LANG}/{filename}'), 'r') as inp_file:
             dst_lang_text = inp_file.read()
         translated_src_lang_text = translate_text(translator, dst_lang_text)
+        if not isinstance(detector, labse_definition.LabseDetector):
+            src_lang_text = prepare_text(src_lang_text)
+            translated_src_lang_text = prepare_text(translated_src_lang_text)
         result[filename] = str(detector.count_similiarity(src_lang_text, translated_src_lang_text)).replace('.', ',')
     progress_bar.finish()
     return result
