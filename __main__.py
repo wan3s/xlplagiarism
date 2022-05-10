@@ -2,6 +2,7 @@ import argparse
 
 from scripts import consts
 from scripts.experiments import compare_detectors
+from scripts.experiments import compare_on_public_datasets
 from scripts.experiments import compare_translators
 from scripts.detectors.labse import definition as labse_definition
 from scripts.prepare_texts import prepare_wikipedia_texts
@@ -37,6 +38,7 @@ def main():
     parser.add_argument('--shuffle-texts', action='store_true')
     parser.add_argument('--run-experiments', action='store_true')
     parser.add_argument('--compare-translators', action='store_true')
+    parser.add_argument('--run-on-public-datasets', action='store_true')
     parser.add_argument(
         '--dataset',
         default=consts.TEST_DATASET, 
@@ -63,6 +65,9 @@ def main():
     if args.run_program:
         print('Running program ...')
         run_program(args)
+    if args.run_on_public_datasets:
+        print('Comparing methods on public datasets ...')
+        compare_on_public_datasets.run(args)
 
 if __name__ == '__main__':
     main()
