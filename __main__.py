@@ -4,32 +4,9 @@ from scripts import consts
 from scripts.experiments import compare_detectors
 from scripts.experiments import compare_on_public_datasets
 from scripts.experiments import compare_translators
-from scripts.detectors.labse import definition as labse_definition
+from scripts.mvp import core as model_system
 from scripts.prepare_texts import prepare_wikipedia_texts
 from scripts.prepare_texts import shuffle_texts as shuffle_prepared_texts
-    
-
-def run_program(args):
-    if not args.input_files:
-        print('Please pass two input files using --input-files key')
-        return
-    labse_detector = labse_definition.LabseDetector(sim_threshold=args.labse_sim_threshold)
-    inp_file_name1, inp_file_name2 = args.input_files
-    with open(inp_file_name1, 'r') as inp_file:
-        raw_text1 = inp_file.read()
-    with open(inp_file_name2, 'r') as inp_file:
-        raw_text2 = inp_file.read()
-    coef, sim_sentences = labse_detector.get_sim_sentences(raw_text1, raw_text2)
-    originality = 1-coef
-    if coef < 0.3:
-        print(f'Originality={originality}: these texts are completely different')
-    elif coef < 0.7:
-        print(f'Originality={originality}: these texts may be have some common quotes')
-    else:
-        print(f'Originality={originality}: are these text really different?')
-    if sim_sentences:
-        print('These sentences are very similar:')
-        print(sim_sentences)
 
 
 def main():
@@ -46,7 +23,7 @@ def main():
     )
     parser.add_argument('--run-program', action='store_true')
     parser.add_argument('--outfile-name', default='result')
-    parser.add_argument('--input-files', nargs=2)
+    parser.add_argument('--input-file')
     parser.add_argument('--labse-sim-threshold', default=consts.LABSE_SIM_THRESHOLD, type=float)
     args = parser.parse_args()
 
@@ -64,7 +41,7 @@ def main():
         compare_translators.run(args)
     if args.run_program:
         print('Running program ...')
-        run_program(args)
+        model_system.run_program(args)
     if args.run_on_public_datasets:
         print('Comparing methods on public datasets ...')
         compare_on_public_datasets.run(args)
